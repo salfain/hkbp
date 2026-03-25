@@ -1,15 +1,72 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Enum untuk membedakan hak akses
+enum Role {
+  ADMIN
+  JEMAAT
+}
+
+// Enum untuk melacak status pendaftaran dan kehadiran
+enum StatusKehadiran {
+  MENDAFTAR    // Saat jemaat baru klik "Daftar"
+  HADIR        // Saat admin mengonfirmasi kehadiran (H-hari)
+  TIDAK_HADIR  // Jika tidak datang
+}
+
+model User {
+  id            String    @id @default(cuid())
+  namaLengkap   String
+  email         String    @unique
+  password      String    // Password yang akan di-hash menggunakan bcrypt
+  nomorTelepon  String?   // Sangat penting untuk fitur Notifikasi WhatsApp (Fonnte/Wablas)
+  tanggalLahir  DateTime  // Wajib untuk trigger Cron Job Ulang Tahun
+  alamat        String?
+  sektor        String?   // Khas gereja HKBP (biasanya menggunakan Wijk/Sektor)
+  role          Role      @default(JEMAAT)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relasi: Satu jemaat bisa mendaftar banyak kegiatan
+  pendaftaran   Pendaftaran[]
+}
+
+model Kegiatan {
+  id              String    @id @default(cuid())
+  namaAcara       String
+  deskripsi       String?   @db.Text
+  tanggalMulai    DateTime  
+  tanggalSelesai  DateTime?
+  lokasi          String?
+  kuota           Int?      
+  kategori        String?   // cth: "Ibadah Minggu", "Pemuda", "Sekolah Minggu"
+  imageUrl        String?   // URL gambar banner acara untuk estetika UI
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  pendaftaran     Pendaftaran[]
+}
+
+model Pendaftaran {
+  id          String          @id @default(cuid())
+  userId      String
+  kegiatanId  String
+  waktuDaftar DateTime        @default(now())
+  status      StatusKehadiran @default(MENDAFTAR)
+  waktuHadir  DateTime?       // Waktu presisi (timestamp) saat jemaat dikonfirmasi hadir
+
+  // Foreign keys dengan aksi Cascade (Jika User/Kegiatan dihapus, data pendaftaran ikut terhapus)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kegiatan    Kegiatan        @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+
+  // Constraint: Satu jemaat hanya bisa mendaftar satu kali pada kegiatan yang sama
+  @@unique([userId, kegiatanId])
 }
