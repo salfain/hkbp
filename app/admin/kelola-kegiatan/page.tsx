@@ -24,7 +24,7 @@ export default async function KelolaKegiatanPage() {
                 </div>
             </div>
 
-            <Card className="rounded-2xl border-none shadow-md overflow-hidden bg-white">
+            <Card className="rounded-2xl border-none shadow-md overflow-hidden bg-white gap-0">
                 <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
                     <CardTitle className="text-lg font-bold text-slate-800">Daftar Jadwal Acara</CardTitle>
                 </CardHeader>

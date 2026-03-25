@@ -3,8 +3,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import FormTambahJemaat from "@/components/forms/FormTambahJemaat";
 import SearchComp from "@/components/Search";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import { Suspense } from "react";
+import RowActionJemaat from "@/components/forms/RowActionJemaat";
+import { format } from "date-fns";
+import { id as localeId } from "date-fns/locale";
 
 // Menambahkan props searchParams bawaan Next.js
 export default async function KelolaJemaatPage({
@@ -33,9 +36,9 @@ export default async function KelolaJemaatPage({
                 </div>
             </div>
 
-            <Card className="rounded-2xl border-none shadow-md overflow-hidden bg-white">
+            <Card className="rounded-2xl border-none shadow-md overflow-hidden bg-white gap-0">
                 <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                         <CardTitle className="text-lg font-bold text-slate-800">Daftar Jemaat Terdaftar</CardTitle>
                         <Suspense fallback={<div className="h-11 w-full max-w-sm animate-pulse rounded-xl bg-slate-100" />}>
                             <SearchComp />
@@ -48,8 +51,10 @@ export default async function KelolaJemaatPage({
                             <TableRow className="hover:bg-transparent border-slate-100">
                                 <TableHead className="w-300px text-slate-600 font-semibold py-4 pl-6">Nama Lengkap</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Email</TableHead>
+                                <TableHead className="text-slate-600 font-semibold">Tanggal Lahir</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">No. Telepon / WA</TableHead>
-                                <TableHead className="text-slate-600 font-semibold text-right pr-6">Wijk / Sektor</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-right">Wijk / Sektor</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-right pr-6">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -81,6 +86,12 @@ export default async function KelolaJemaatPage({
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-slate-600">{jemaat.email}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                <Clock className="h-4 w-4 text-indigo-400" />
+                                                {format(new Date(jemaat.tanggalLahir), "dd MMM yyyy", { locale: localeId })}
+                                            </div>
+                                        </TableCell>
                                         <TableCell className="text-slate-600">{jemaat.nomorTelepon || "-"}</TableCell>
                                         <TableCell className="text-right pr-6">
                                             {jemaat.sektor ? (
@@ -90,6 +101,9 @@ export default async function KelolaJemaatPage({
                                             ) : (
                                                 <span className="text-slate-400 text-sm">-</span>
                                             )}
+                                        </TableCell>
+                                        <TableCell className="text-right pr-6">
+                                            <RowActionJemaat jemaat={jemaat} />
                                         </TableCell>
                                     </TableRow>
                                 ))

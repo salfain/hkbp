@@ -34,3 +34,43 @@ export async function tambahKegiatan (formData: FormData) {
     return { success: false, message: 'Terjadi kesalahan pada server.' }
   }
 }
+
+export async function updateKegiatan (id: string, formData: FormData) {
+  try {
+    const namaAcara = formData.get('namaAcara') as string
+    const deskripsi = formData.get('deskripsi') as string
+    const lokasi = formData.get('lokasi') as string
+    const kategori = formData.get('kategori') as string
+    const tanggalMulai = formData.get('tanggalMulai') as string
+
+    await prisma.kegiatan.update({
+      where: { id },
+      data: {
+        namaAcara,
+        deskripsi,
+        lokasi,
+        kategori,
+        tanggalMulai: new Date(tanggalMulai)
+      }
+    })
+
+    revalidatePath('/admin/kelola-kegiatan')
+    return { success: true, message: 'Kegiatan berhasil diperbarui.' }
+  } catch (error) {
+    console.error('Error update kegiatan:', error)
+    return { success: false, message: 'Terjadi kesalahan pada server.' }
+  }
+}
+
+export async function hapusKegiatan (id: string) {
+  try {
+    await prisma.kegiatan.delete({
+      where: { id }
+    })
+    revalidatePath('/admin/kelola-kegiatan')
+    return { success: true, message: 'Kegiatan berhasil dihapus.' }
+  } catch (error) {
+    console.error('Error hapus kegiatan:', error)
+    return { success: false, message: 'Gagal menghapus kegiatan.' }
+  }
+}

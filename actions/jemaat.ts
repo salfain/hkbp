@@ -13,7 +13,7 @@ export async function tambahJemaat (formData: FormData) {
     const tanggalLahirRaw = formData.get('tanggalLahir') as string
 
     // Default password untuk jemaat baru adalah nomor telepon atau default string
-    const hashedPassword = await hashPassword(nomorTelepon || 'hkbp123')
+    const hashedPassword = await hashPassword('hkbp123')
 
     await prisma.user.create({
       data: {
@@ -37,6 +37,46 @@ export async function tambahJemaat (formData: FormData) {
   }
 }
 
+export async function updateJemaat (id: string, formData: FormData) {
+  try {
+    const namaLengkap = formData.get('namaLengkap') as string
+    const email = formData.get('email') as string
+    const nomorTelepon = formData.get('nomorTelepon') as string
+    const sektor = formData.get('sektor') as string
+    const tanggalLahirRaw = formData.get('tanggalLahir') as string
+
+    await prisma.user.update({
+      where: { id },
+      data: {
+        namaLengkap,
+        email,
+        nomorTelepon,
+        sektor,
+        tanggalLahir: new Date(tanggalLahirRaw)
+      }
+    })
+
+    revalidatePath('/admin/kelola-jemaat')
+    return { success: true, message: 'Data jemaat berhasil diperbarui.' }
+  } catch (error) {
+    console.error('Gagal update jemaat:', error)
+    return { success: false, message: 'Gagal memperbarui data.' }
+  }
+}
+
+export async function hapusJemaat (id: string) {
+  try {
+    await prisma.user.delete({
+      where: { id }
+    })
+    revalidatePath('/admin/kelola-jemaat')
+    return { success: true, message: 'Data jemaat berhasil dihapus.' }
+  } catch (error) {
+    console.error('Gagal hapus jemaat:', error)
+    return { success: false, message: 'Gagal menghapus data.' }
+  }
+}
+
 export async function getDaftarJemaat (query?: string) {
   return await prisma.user.findMany({
     where: {
@@ -56,6 +96,7 @@ export async function getDaftarJemaat (query?: string) {
       id: true,
       namaLengkap: true,
       email: true,
+      tanggalLahir: true,
       nomorTelepon: true,
       sektor: true
     }
