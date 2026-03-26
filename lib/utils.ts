@@ -18,3 +18,11 @@ export const comparePassword = async (
 ) => {
   return await bcrypt.compare(password, hashedPassword)
 }
+
+export const formatDateTimeLocal = (date: Date) => {
+  const d = new Date(date)
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`
+}

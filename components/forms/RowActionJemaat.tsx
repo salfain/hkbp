@@ -7,7 +7,7 @@ import { updateJemaat, hapusJemaat } from "@/actions/jemaat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -56,7 +56,7 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
     }
 
     return (
-        <React.Fragment >
+        <React.Fragment>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-slate-100 rounded-lg">
@@ -65,8 +65,6 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                    <DropdownMenuLabel className="text-xs text-slate-500">Aksi Data</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
                         <Edit className="mr-2 h-4 w-4 text-blue-600" /> Edit Profil
                     </DropdownMenuItem>
@@ -79,7 +77,7 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
             {/* SHEET EDIT JEMAAT */}
             <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <SheetContent side="right" className="flex flex-col h-full w-full sm:max-w-md p-0 bg-white border-l-slate-200">
-                    <div className="px-6 py-5 border-b border-slate-100 bg-white z-10">
+                    <div className="px-3 py-5 border-b border-slate-100 bg-white z-10">
                         <SheetHeader className="space-y-1 text-left">
                             <SheetTitle className="text-xl font-bold text-slate-800">Edit Data Jemaat</SheetTitle>
                             <SheetDescription className="text-sm text-slate-500">
@@ -112,9 +110,9 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                                 <Input name="sektor" defaultValue={jemaat.sektor || ""} className="h-11 rounded-xl" />
                             </div>
                         </div>
-                        <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
-                            <Button type="button" variant="outline" className="w-full h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
-                            <Button type="submit" className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0 justify-end">
+                            <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
+                            <Button type="submit" className="h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Simpan Perubahan"}
                             </Button>
                         </div>
@@ -133,7 +131,7 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel className="rounded-xl">Batal</AlertDialogCancel>
-                        <Button variant="destructive" className="rounded-xl bg-red-600 hover:bg-red-700" onClick={handleDelete} disabled={isLoading}>
+                        <Button variant="destructive" className="rounded-xl" onClick={handleDelete} disabled={isLoading}>
                             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ya, Hapus"}
                         </Button>
                     </AlertDialogFooter>

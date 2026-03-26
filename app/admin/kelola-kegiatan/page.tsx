@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin, Clock } from "lucide-react";
 import FormTambahKegiatan from "@/components/forms/FormTambahKegiatan";
+import RowActionKegiatan from "@/components/forms/RowActionKegiatan";
 
 export default async function KelolaKegiatanPage() {
     const dataKegiatan = await getDaftarKegiatan();
@@ -35,7 +36,8 @@ export default async function KelolaKegiatanPage() {
                                 <TableHead className="text-slate-600 font-semibold py-4 pl-6">Nama Acara</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Waktu</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Lokasi</TableHead>
-                                <TableHead className="text-slate-600 font-semibold text-right pr-6">Kategori</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-center">Kategori</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-right pr-6">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -63,10 +65,13 @@ export default async function KelolaKegiatanPage() {
                                                 {kegiatan.lokasi || "-"}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-right pr-6">
+                                        <TableCell className="text-center">
                                             <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
                                                 {kegiatan.kategori}
                                             </span>
+                                        </TableCell>
+                                        <TableCell className="text-right pr-6">
+                                            <RowActionKegiatan kegiatan={kegiatan} />
                                         </TableCell>
                                     </TableRow>
                                 ))

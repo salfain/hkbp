@@ -9,7 +9,6 @@ import RowActionJemaat from "@/components/forms/RowActionJemaat";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
-// Menambahkan props searchParams bawaan Next.js
 export default async function KelolaJemaatPage({
     searchParams,
 }: {
@@ -53,7 +52,7 @@ export default async function KelolaJemaatPage({
                                 <TableHead className="text-slate-600 font-semibold">Email</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Tanggal Lahir</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">No. Telepon / WA</TableHead>
-                                <TableHead className="text-slate-600 font-semibold text-right">Wijk / Sektor</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-center">Wijk / Sektor</TableHead>
                                 <TableHead className="text-slate-600 font-semibold text-right pr-6">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -93,7 +92,7 @@ export default async function KelolaJemaatPage({
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-slate-600">{jemaat.nomorTelepon || "-"}</TableCell>
-                                        <TableCell className="text-right pr-6">
+                                        <TableCell className="text-center">
                                             {jemaat.sektor ? (
                                                 <span className="inline-flex items-center rounded-full bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
                                                     {jemaat.sektor}
