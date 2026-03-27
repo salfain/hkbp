@@ -11,15 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatDateTimeLocal } from "@/lib/utils";
-
-interface Kegiatan {
-    id: string;
-    namaAcara: string;
-    deskripsi: string | null;
-    tanggalMulai: Date;
-    lokasi: string | null;
-    kategori: string | null;
-}
+import { Kegiatan } from "@/types/kegiatan";
 
 export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) {
     const [isEditOpen, setIsEditOpen] = useState(false);

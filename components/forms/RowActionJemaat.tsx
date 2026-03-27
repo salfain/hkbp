@@ -10,15 +10,7 @@ import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-
-interface Jemaat {
-    id: string;
-    namaLengkap: string;
-    email: string;
-    nomorTelepon: string | null;
-    tanggalLahir: Date | null;
-    sektor: string | null;
-}
+import { Jemaat } from "@/types/jemaat";
 
 export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
     const [isEditOpen, setIsEditOpen] = useState(false);

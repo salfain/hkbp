@@ -1,13 +1,14 @@
 import { getDaftarJemaat } from "@/actions/jemaat";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import FormTambahJemaat from "@/components/forms/FormTambahJemaat";
-import SearchComp from "@/components/Search";
+import SearchComp from "@/components/Search"; // Pastikan path ini benar
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Users } from "lucide-react";
 import { Suspense } from "react";
 import RowActionJemaat from "@/components/forms/RowActionJemaat";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import { Jemaat } from "@/types/jemaat";
 
 export default async function KelolaJemaatPage({
     searchParams,
@@ -59,7 +60,8 @@ export default async function KelolaJemaatPage({
                         <TableBody>
                             {dataJemaat.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center text-slate-500 h-40 bg-slate-50/30">
+                                    {/* 2. Ubah colSpan menjadi 6 agar layout tabel tidak rusak saat kosong */}
+                                    <TableCell colSpan={6} className="text-center text-slate-500 h-40 bg-slate-50/30">
                                         <div className="flex flex-col items-center justify-center space-y-3">
                                             <div className="bg-slate-100 p-3 rounded-full">
                                                 <Users className="h-8 w-8 text-slate-300" />
@@ -71,7 +73,8 @@ export default async function KelolaJemaatPage({
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                dataJemaat.map((jemaat) => (
+                                // 3. Sematkan tipe data JemaatItem pada parameter map
+                                dataJemaat.map((jemaat: Jemaat) => (
                                     <TableRow
                                         key={jemaat.id}
                                         className="hover:bg-blue-50/50 transition-colors border-slate-100 group"
