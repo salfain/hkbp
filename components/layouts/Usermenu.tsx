@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface UserMenuProps {
     name?: string | null;
@@ -18,8 +19,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ name, role }: UserMenuProps) {
-    // Mengambil inisial nama untuk Avatar
     const initials = name?.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase() || "U";
+    const profileLink = role === "ADMIN" ? "/admin/profil" : "/jemaat/profil";
 
     return (
         <DropdownMenu>
@@ -39,9 +40,11 @@ export function UserMenu({ name, role }: UserMenuProps) {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-colors">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profil Saya</span>
+                <DropdownMenuItem asChild className="cursor-pointer text-slate-700 hover:text-blue-700 hover:bg-blue-50 transition-colors">
+                    <Link href={profileLink}>
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        <span>Profil Saya</span>
+                    </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: "/login" })}

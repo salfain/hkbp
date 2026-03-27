@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistem Informasi Pendaftaran dan Komunikasi Gereja (HKBP Pondok Kopi)
 
-## Getting Started
+Aplikasi berbasis web ini dirancang untuk memfasilitasi manajemen data jemaat, pendaftaran kegiatan gereja, serta komunikasi informasi secara efisien. Proyek ini dikembangkan sebagai bagian dari Tugas Akhir/Skripsi (Studi Kasus: HKBP Ressort Pondok Kopi).
 
-First, run the development server:
+## 🚀 Teknologi yang Digunakan
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Proyek ini dibangun menggunakan _stack_ teknologi modern (T3-Stack Concept) dengan performa tinggi:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Framework**: [Next.js 14/15 (App Router)](https://nextjs.org/)
+- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/)
+- **Database**: [PostgreSQL (Neon DB)](https://neon.tech/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Autentikasi**: [NextAuth.js v4](https://next-auth.js.org/)
+- **Ekspor Laporan**: [ExcelJS](https://github.com/exceljs/exceljs)
+- **Deployment & Cron**: [Vercel](https://vercel.com/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Fitur Utama
 
-## Learn More
+### 👑 Panel Administrator (Parhalado)
 
-To learn more about Next.js, take a look at the following resources:
+- **Dashboard Analitik**: Ringkasan total jemaat terdaftar dan kegiatan aktif.
+- **Kelola Jemaat**: CRUD (Create, Read, Update, Delete) data jemaat beserta fitur pencarian _real-time_ berbasis URL.
+- **Kelola Kegiatan**: Pembuatan jadwal ibadah, rapat, atau acara gereja dengan pengaturan waktu dan deskripsi rinci.
+- **Ekspor Laporan**: Mengunduh daftar kehadiran jemaat per kegiatan dalam format `.xlsx` (Excel).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 👥 Panel Jemaat
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Dashboard Profil**: Tampilan sapaan personal dan jadwal kegiatan yang akan diikuti.
+- **Daftar Kegiatan**: Eksplorasi jadwal pelayanan terbuka dan fitur "Satu Klik Daftar/Batal".
+- **Manajemen Profil**: Pembaruan biodata mandiri dan perubahan kata sandi.
 
-## Deploy on Vercel
+### 🤖 Sistem Otomasi (Background Jobs)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Notifikasi Ulang Tahun**: Terintegrasi dengan Vercel Cron untuk mengecek jemaat yang berulang tahun setiap pukul 08:00 pagi (siap dihubungkan ke API WhatsApp/Fonnte).
