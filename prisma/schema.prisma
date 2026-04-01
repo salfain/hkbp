@@ -7,66 +7,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enum untuk membedakan hak akses
 enum Role {
   ADMIN
   JEMAAT
 }
 
-// Enum untuk melacak status pendaftaran dan kehadiran
-enum StatusKehadiran {
-  MENDAFTAR    // Saat jemaat baru klik "Daftar"
-  HADIR        // Saat admin mengonfirmasi kehadiran (H-hari)
-  TIDAK_HADIR  // Jika tidak datang
+// BARU: Status untuk Approval Akun Jemaat
+enum StatusAkun {
+  PENDING   // Baru mendaftar, belum bisa login
+  AKTIF     // Sudah di-ACC Admin, bisa login
+  DITOLAK   // Ditolak Admin
+}
+
+// BARU: Tipe Kegiatan untuk membedakan alur pendaftaran
+enum TipeKegiatan {
+  UMUM      // Daftar langsung masuk (cth: Ibadah Minggu)
+  KHUSUS    // Butuh ACC Admin (cth: Nikah, Sidi, Baptis, Pindah)
+}
+
+// UPDATE: Penyesuaian Status Pendaftaran
+enum StatusPendaftaran {
+  MENUNGGU_ACC // Khusus kegiatan KHUSUS
+  TERDAFTAR    // Sukses (Kegiatan UMUM langsung ke sini, KHUSUS kalau di-ACC)
+  DITOLAK      // Jika pendaftaran KHUSUS ditolak
+  HADIR        // Saat hari-H diabsen
+  TIDAK_HADIR  // Tidak datang
 }
 
 model User {
-  id            String    @id @default(cuid())
-  namaLengkap   String
-  email         String    @unique
-  password      String    // Password yang akan di-hash menggunakan bcrypt
-  nomorTelepon  String?   // Sangat penting untuk fitur Notifikasi WhatsApp (Fonnte/Wablas)
-  tanggalLahir  DateTime  // Wajib untuk trigger Cron Job Ulang Tahun
-  alamat        String?
-  sektor        String?   // Khas gereja HKBP (biasanya menggunakan Wijk/Sektor)
-  role          Role      @default(JEMAAT)
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String      @id @default(cuid())
+  namaLengkap  String
+  email        String      @unique
+  password     String
+  nomorTelepon String?
+  tanggalLahir DateTime
+  alamat       String?
+  sektor       String?
+  role         Role        @default(JEMAAT)
+  statusAkun   StatusAkun  @default(PENDING) // Default Register adalah PENDING
 
-  // Relasi: Satu jemaat bisa mendaftar banyak kegiatan
-  pendaftaran   Pendaftaran[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  pendaftaran  Pendaftaran[]
 }
 
 model Kegiatan {
-  id              String    @id @default(cuid())
-  namaAcara       String
-  deskripsi       String?   @db.Text
-  tanggalMulai    DateTime  
-  tanggalSelesai  DateTime?
-  lokasi          String?
-  kuota           Int?      
-  kategori        String?   // cth: "Ibadah Minggu", "Pemuda", "Sekolah Minggu"
-  imageUrl        String?   // URL gambar banner acara untuk estetika UI
+  id             String        @id @default(cuid())
+  namaAcara      String
+  deskripsi      String?       @db.Text
+  tanggalMulai   DateTime
+  tanggalSelesai DateTime?
+  lokasi         String?
+  kuota          Int?
+  kategori       String?       
+  tipeKegiatan   TipeKegiatan  @default(UMUM) // Default UMUM
+  imageUrl       String?
   
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  pendaftaran     Pendaftaran[]
+  pendaftaran    Pendaftaran[]
 }
 
 model Pendaftaran {
-  id          String          @id @default(cuid())
+  id          String            @id @default(cuid())
   userId      String
   kegiatanId  String
-  waktuDaftar DateTime        @default(now())
-  status      StatusKehadiran @default(MENDAFTAR)
-  waktuHadir  DateTime?       // Waktu presisi (timestamp) saat jemaat dikonfirmasi hadir
+  waktuDaftar DateTime          @default(now())
+  status      StatusPendaftaran @default(TERDAFTAR)
+  catatan     String?           @db.Text // Untuk pesan tambahan dari jemaat (misal: "Nama Pasangan: Budi & Ani")
+  waktuHadir  DateTime?
 
-  // Foreign keys dengan aksi Cascade (Jika User/Kegiatan dihapus, data pendaftaran ikut terhapus)
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kegiatan    Kegiatan        @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kegiatan    Kegiatan          @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
 
-  // Constraint: Satu jemaat hanya bisa mendaftar satu kali pada kegiatan yang sama
   @@unique([userId, kegiatanId])
 }

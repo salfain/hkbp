@@ -5,4 +5,5 @@ export interface Jemaat {
   nomorTelepon: string | null
   tanggalLahir: Date | string | number
   sektor: string | null
+  statusAkun: string
 }

@@ -2,12 +2,12 @@
 
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Edit, Trash2, Loader2 } from "lucide-react";
-import { updateJemaat, hapusJemaat } from "@/actions/jemaat";
+import { MoreHorizontal, Edit, Trash2, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { updateJemaat, hapusJemaat, ubahStatusAkun } from "@/actions/jemaat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Jemaat } from "@/types/jemaat";
@@ -47,6 +47,17 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
         }
     }
 
+    async function handleStatus(status: "AKTIF" | "DITOLAK") {
+        setIsLoading(true);
+        const res = await ubahStatusAkun(jemaat.id, status);
+        setIsLoading(false);
+        if (res.success) {
+            toast.success(res.message);
+        } else {
+            toast.error(res.message);
+        }
+    }
+
     return (
         <React.Fragment>
             <DropdownMenu>
@@ -56,7 +67,18 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                         <MoreHorizontal className="h-4 w-4 text-slate-500" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40 rounded-xl">
+                <DropdownMenuContent align="end" className="w-50 rounded-xl">
+                    {jemaat.statusAkun === "PENDING" && (
+                        <React.Fragment>
+                            <DropdownMenuItem onClick={() => handleStatus("AKTIF")} className="cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
+                                <CheckCircle className="mr-2 h-4 w-4" /> ACC Pendaftaran
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleStatus("DITOLAK")} className="cursor-pointer text-orange-600 focus:text-orange-700 focus:bg-orange-50">
+                                <XCircle className="mr-2 h-4 w-4" /> Tolak Jemaat
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                        </React.Fragment>
+                    )}
                     <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
                         <Edit className="mr-2 h-4 w-4 text-blue-600" /> Edit Profil
                     </DropdownMenuItem>

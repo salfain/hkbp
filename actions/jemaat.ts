@@ -77,6 +77,26 @@ export async function hapusJemaat (id: string) {
   }
 }
 
+export async function ubahStatusAkun (
+  userId: string,
+  statusBaru: 'AKTIF' | 'DITOLAK'
+) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { statusAkun: statusBaru }
+    })
+    revalidatePath('/admin/kelola-jemaat')
+    return {
+      success: true,
+      message: `Status akun berhasil diubah menjadi ${statusBaru}.`
+    }
+  } catch (error) {
+    console.error('Gagal mengubah status akun:', error)
+    return { success: false, message: 'Gagal mengubah status akun.' }
+  }
+}
+
 export async function getDaftarJemaat (query?: string) {
   return await prisma.user.findMany({
     where: {
@@ -98,7 +118,8 @@ export async function getDaftarJemaat (query?: string) {
       email: true,
       tanggalLahir: true,
       nomorTelepon: true,
-      sektor: true
+      sektor: true,
+      statusAkun: true
     }
   })
 }

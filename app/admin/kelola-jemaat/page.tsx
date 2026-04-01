@@ -49,11 +49,13 @@ export default async function KelolaJemaatPage({
                     <Table>
                         <TableHeader className="bg-slate-50">
                             <TableRow className="hover:bg-transparent border-slate-100">
+
                                 <TableHead className="w-300px text-slate-600 font-semibold py-4 pl-6">Nama Lengkap</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Email</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">Tanggal Lahir</TableHead>
                                 <TableHead className="text-slate-600 font-semibold">No. Telepon / WA</TableHead>
                                 <TableHead className="text-slate-600 font-semibold text-center">Wijk / Sektor</TableHead>
+                                <TableHead className="text-slate-600 font-semibold text-center">Status</TableHead>
                                 <TableHead className="text-slate-600 font-semibold text-right pr-6">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -103,6 +105,11 @@ export default async function KelolaJemaatPage({
                                             ) : (
                                                 <span className="text-slate-400 text-sm">-</span>
                                             )}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            {jemaat.statusAkun === "PENDING" && <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">MENUNGGU ACC</span>}
+                                            {jemaat.statusAkun === "AKTIF" && <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">AKTIF</span>}
+                                            {jemaat.statusAkun === "DITOLAK" && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">DITOLAK</span>}
                                         </TableCell>
                                         <TableCell className="text-right pr-6">
                                             <RowActionJemaat jemaat={jemaat} />

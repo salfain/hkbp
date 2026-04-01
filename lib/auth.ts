@@ -30,6 +30,17 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email tidak terdaftar')
         }
 
+        if (user.role === 'JEMAAT') {
+          if (user.statusAkun === 'PENDING') {
+            throw new Error(
+              'Akun Anda sedang menunggu persetujuan (ACC) dari Admin.'
+            )
+          }
+          if (user.statusAkun === 'DITOLAK') {
+            throw new Error('Pendaftaran akun Anda ditolak oleh Admin.')
+          }
+        }
+
         const isPasswordValid = await comparePassword(
           credentials.password,
           user.password
