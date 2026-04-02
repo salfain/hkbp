@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Church, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Church, Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,16 +55,6 @@ export default function LoginPage() {
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-slate-50 overflow-hidden p-4">
-            {/* Floating Back Button (Escape Hatch) */}
-            <Link
-                href="/"
-                className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-500 bg-white/60 hover:bg-white backdrop-blur-md rounded-full shadow-sm border border-slate-200 hover:text-blue-600 hover:shadow-md transition-all duration-300 active:scale-95"
-            >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Kembali</span>
-            </Link>
-
-            {/* Ornamen Latar Belakang Gradient */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 blur-[100px]" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/20 blur-[100px]" />
 
@@ -123,7 +113,13 @@ export default function LoginPage() {
                         </Button>
                     </form>
                 </CardContent>
-                <CardFooter className="flex justify-center pb-8">
+                <CardFooter className="flex flex-col gap-4 pb-4">
+                    <div className="text-center text-sm text-slate-500">
+                        Belum punya akun?{" "}
+                        <Link href="/register" className="text-blue-600 font-semibold hover:underline transition-colors">
+                            Daftar sebagai Jemaat
+                        </Link>
+                    </div>
                     <Link href="/" className="text-sm text-slate-500 hover:text-blue-600 font-medium transition-colors">
                         &larr; Kembali ke halaman awal
                     </Link>

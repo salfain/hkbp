@@ -7,8 +7,8 @@ import { registerJemaat } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Church, Loader2, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Church, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -33,12 +33,11 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-slate-50 p-4 py-12">
-            <Link href="/" className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-500 bg-white rounded-full shadow-sm hover:text-blue-600 transition-all">
-                <ArrowLeft className="h-4 w-4" /> Kembali
-            </Link>
+        <div className="relative flex min-h-screen items-center justify-center bg-slate-50 overflow-hidden p-4">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/20 blur-[100px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/20 blur-[100px]" />
 
-            <Card className="z-10 w-full max-w-lg shadow-xl border-slate-100 rounded-2xl">
+            <Card className="z-10 w-full max-w-lg shadow-xl border-slate-100 rounded-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <CardHeader className="text-center pb-4">
                     <div className="mx-auto bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-2">
                         <Church className="h-6 w-6 text-blue-600" />
@@ -74,10 +73,15 @@ export default function RegisterPage() {
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Kirim Pendaftaran"}
                         </Button>
                     </form>
-                    <div className="mt-6 text-center text-sm text-slate-500">
+                </CardContent>
+                <CardFooter className="flex flex-col gap-4">
+                    <div className="text-center text-sm text-slate-500">
                         Sudah punya akun? <Link href="/login" className="text-blue-600 font-semibold hover:underline">Login di sini</Link>
                     </div>
-                </CardContent>
+                    <Link href="/" className="text-sm text-slate-500 hover:text-blue-600 font-medium transition-colors">
+                        &larr; Kembali ke halaman awal
+                    </Link>
+                </CardFooter>
             </Card>
         </div>
     );

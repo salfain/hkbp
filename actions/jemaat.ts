@@ -11,9 +11,7 @@ export async function tambahJemaat (formData: FormData) {
     const nomorTelepon = formData.get('nomorTelepon') as string
     const sektor = formData.get('sektor') as string
     const tanggalLahirRaw = formData.get('tanggalLahir') as string
-
-    // Default password untuk jemaat baru adalah nomor telepon atau default string
-    const hashedPassword = await hashPassword('hkbp123')
+    const hashedPassword = await hashPassword('password123')
 
     await prisma.user.create({
       data: {
@@ -23,11 +21,11 @@ export async function tambahJemaat (formData: FormData) {
         nomorTelepon,
         sektor,
         tanggalLahir: new Date(tanggalLahirRaw),
-        role: 'JEMAAT'
+        role: 'JEMAAT',
+        statusAkun: 'AKTIF'
       }
     })
 
-    // Refresh halaman agar tabel ter-update
     revalidatePath('/admin/kelola-jemaat')
 
     return { success: true, message: 'Data jemaat berhasil ditambahkan.' }

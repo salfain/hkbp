@@ -107,9 +107,9 @@ export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) 
                                 />
                             </div>
                         </div>
-                        <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
-                            <Button type="button" variant="outline" className="w-full h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
-                            <Button type="submit" className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white" disabled={isLoading}>
+                        <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0 justify-end">
+                            <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
+                            <Button type="submit" className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white" disabled={isLoading}>
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Simpan Perubahan"}
                             </Button>
                         </div>

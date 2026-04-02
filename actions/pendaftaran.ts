@@ -3,16 +3,21 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-// Mengambil daftar kegiatan yang AKAN DATANG beserta status pendaftaran user saat ini
-export async function getKegiatanTersedia (userId: string) {
+export async function getKegiatanTersedia (
+  userId: string,
+  tipe: 'UMUM' | 'KHUSUS'
+) {
   const now = new Date()
   return await prisma.kegiatan.findMany({
-    where: { tanggalMulai: { gte: now } },
+    where: {
+      tanggalMulai: { gte: now },
+      tipeKegiatan: tipe
+    },
     orderBy: { tanggalMulai: 'asc' },
     include: {
       pendaftaran: {
         where: { userId: userId },
-        select: { id: true }
+        select: { id: true, status: true, catatan: true } // Tarik status untuk UI
       }
     }
   })
@@ -31,14 +36,32 @@ export async function getJadwalSaya (userId: string) {
   })
 }
 
-export async function daftarKegiatan (userId: string, kegiatanId: string) {
+export async function daftarKegiatan (
+  userId: string,
+  kegiatanId: string,
+  tipe: 'UMUM' | 'KHUSUS',
+  catatan?: string
+) {
   try {
+    const statusDaftar = tipe === 'KHUSUS' ? 'MENUNGGU_ACC' : 'TERDAFTAR'
+
     await prisma.pendaftaran.create({
-      data: { userId, kegiatanId }
+      data: {
+        userId,
+        kegiatanId,
+        status: statusDaftar,
+        catatan: catatan || null
+      }
     })
     revalidatePath('/jemaat/kegiatan')
     revalidatePath('/jemaat')
-    return { success: true, message: 'Berhasil mendaftar kegiatan!' }
+    return {
+      success: true,
+      message:
+        tipe === 'KHUSUS'
+          ? 'Pengajuan terkirim. Menunggu ACC Admin.'
+          : 'Berhasil mendaftar kegiatan!'
+    }
   } catch (error) {
     return {
       success: false,
