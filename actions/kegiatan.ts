@@ -3,9 +3,29 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export async function getDaftarKegiatan () {
+export async function getDaftarKegiatan (tipe?: 'UMUM' | 'KHUSUS') {
   return await prisma.kegiatan.findMany({
+    where: tipe ? { tipeKegiatan: tipe } : {},
     orderBy: { tanggalMulai: 'desc' }
+  })
+}
+
+export async function getDetailKegiatanPeserta (kegiatanId: string) {
+  return await prisma.kegiatan.findUnique({
+    where: { id: kegiatanId },
+    include: {
+      pendaftaran: {
+        where: {
+          status: { in: ['TERDAFTAR', 'HADIR'] }
+        },
+        include: {
+          user: {
+            select: { namaLengkap: true, nomorTelepon: true, sektor: true }
+          }
+        },
+        orderBy: { user: { namaLengkap: 'asc' } }
+      }
+    }
   })
 }
 

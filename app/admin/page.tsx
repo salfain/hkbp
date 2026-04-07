@@ -1,53 +1,71 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, CalendarCheck, TrendingUp } from "lucide-react";
-import prisma from "@/lib/prisma"; // Jika Anda ingin memanggil total data secara live
+import { getDashboardMetrics } from "@/actions/admin-dashboard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Users, UserPlus, ClipboardList, CalendarDays } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default async function AdminDashboard() {
-    const session = await getServerSession(authOptions);
-
-    // (Opsional) Mengambil data asli dari database
-    const totalJemaat = await prisma.user.count({ where: { role: "JEMAAT" } });
-    const totalKegiatan = await prisma.kegiatan.count();
+export default async function AdminDashboardPage() {
+    const metrics = await getDashboardMetrics();
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Dashboard</h1>
-                <p className="text-slate-500 mt-1">Selamat datang kembali, {session?.user?.name}. Berikut adalah ringkasan sistem hari ini.</p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Dashboard Parhalado</h1>
+                <p className="text-slate-500 mt-1 text-sm">Ringkasan data dan notifikasi sistem manajemen HKBP.</p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-                {/* Card Total Jemaat */}
-                <Card className="rounded-2xl border-none shadow-md overflow-hidden relative group">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 transition-all group-hover:w-2" />
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-sm font-medium text-slate-600">Total Jemaat Terdaftar</CardTitle>
-                        <div className="bg-blue-100 p-2 rounded-lg">
-                            <Users className="h-5 w-5 text-blue-600" />
+            {/* NOTIFIKASI PENTING (MUNCUL JIKA ADA PENDING) */}
+            {(metrics.jemaatPending > 0 || metrics.pengajuanPending > 0) && (
+                <div className="grid gap-4 md:grid-cols-2">
+                    {metrics.jemaatPending > 0 && (
+                        <div className="bg-orange-50 border border-orange-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-orange-100 rounded-full text-orange-600"><UserPlus className="h-5 w-5" /></div>
+                                <div>
+                                    <h3 className="font-bold text-orange-900">Pendaftaran Baru!</h3>
+                                    <p className="text-sm text-orange-700">{metrics.jemaatPending} jemaat menunggu di-ACC.</p>
+                                </div>
+                            </div>
+                            <Link href="/admin/kelola-jemaat">
+                                <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl">Review</Button>
+                            </Link>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-black text-slate-900">{totalJemaat}</div>
-                        <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3 text-green-500" /> +2 bulan ini
-                        </p>
+                    )}
+                    {metrics.pengajuanPending > 0 && (
+                        <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 rounded-full text-blue-600"><ClipboardList className="h-5 w-5" /></div>
+                                <div>
+                                    <h3 className="font-bold text-blue-900">Pengajuan Layanan Khusus!</h3>
+                                    <p className="text-sm text-blue-700">{metrics.pengajuanPending} layanan menunggu persetujuan.</p>
+                                </div>
+                            </div>
+                            <Link href="/admin/persetujuan">
+                                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">Review</Button>
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* METRIK STATISTIK */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="rounded-2xl border-none shadow-md bg-white">
+                    <CardContent className="p-6 flex items-center gap-4">
+                        <div className="p-4 bg-emerald-100 text-emerald-600 rounded-2xl"><Users className="h-8 w-8" /></div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500">Total Jemaat Aktif</p>
+                            <h2 className="text-3xl font-extrabold text-slate-900">{metrics.totalJemaatAktif}</h2>
+                        </div>
                     </CardContent>
                 </Card>
-
-                {/* Card Kegiatan Aktif */}
-                <Card className="rounded-2xl border-none shadow-md overflow-hidden relative group">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 transition-all group-hover:w-2" />
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-sm font-medium text-slate-600">Kegiatan Berjalan</CardTitle>
-                        <div className="bg-indigo-100 p-2 rounded-lg">
-                            <CalendarCheck className="h-5 w-5 text-indigo-600" />
+                <Card className="rounded-2xl border-none shadow-md bg-white">
+                    <CardContent className="p-6 flex items-center gap-4">
+                        <div className="p-4 bg-indigo-100 text-indigo-600 rounded-2xl"><CalendarDays className="h-8 w-8" /></div>
+                        <div>
+                            <p className="text-sm font-medium text-slate-500">Agenda Mendatang</p>
+                            <h2 className="text-3xl font-extrabold text-slate-900">{metrics.kegiatanMendatang}</h2>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-black text-slate-900">{totalKegiatan}</div>
-                        <p className="text-xs text-slate-500 mt-2">Jadwal ibadah & persekutuan</p>
                     </CardContent>
                 </Card>
             </div>

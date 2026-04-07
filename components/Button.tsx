@@ -3,36 +3,27 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle2, ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, CheckCircle, XCircle, Clock, Printer } from "lucide-react";
 import { daftarKegiatan, batalDaftarKegiatan } from "@/actions/pendaftaran";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ubahStatusPendaftaran } from "@/actions/persetujuan";
 
 export function TombolDaftar({
-    userId,
-    kegiatanId,
-    isRegistered,
-    tipe,
-    status
+    userId, kegiatanId, isRegistered, tipe, status
 }: {
-    userId: string;
-    kegiatanId: string;
-    isRegistered: boolean;
-    tipe: "UMUM" | "KHUSUS";
-    status?: string;
+    userId: string; kegiatanId: string; isRegistered: boolean; tipe: "UMUM" | "KHUSUS"; status?: string;
 }) {
     const [isLoading, setIsLoading] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [catatan, setCatatan] = useState("");
 
-    async function handleDaftar() {
-        let catatan = "";
-        if (tipe === "KHUSUS") {
-            const input = window.prompt("Masukkan catatan tambahan (opsional):\nContoh: Nama Anak untuk Baptis, atau Nama Pasangan untuk Pernikahan");
-            if (input === null) return;
-            catatan = input;
-        }
-
+    // Fungsi untuk pendaftaran UMUM (Tanpa catatan)
+    async function handleDaftarUmum() {
         setIsLoading(true);
-        const res = await daftarKegiatan(userId, kegiatanId, tipe, catatan);
+        const res = await daftarKegiatan(userId, kegiatanId, "UMUM");
         setIsLoading(false);
         if (res.success) {
             toast.success(res.message);
@@ -41,7 +32,22 @@ export function TombolDaftar({
         }
     }
 
+    // Fungsi untuk pendaftaran KHUSUS (Dengan catatan dari Modal)
+    async function handleDaftarKhusus() {
+        setIsLoading(true);
+        const res = await daftarKegiatan(userId, kegiatanId, "KHUSUS", catatan);
+        setIsLoading(false);
+
+        if (res.success) {
+            toast.success(res.message);
+            setIsDialogOpen(false); // Tutup modal
+        } else {
+            toast.error(res.message);
+        }
+    }
+
     async function handleBatal() {
+        if (!confirm("Yakin ingin membatalkan pendaftaran ini?")) return;
         setIsLoading(true);
         const res = await batalDaftarKegiatan(userId, kegiatanId);
         setIsLoading(false);
@@ -52,11 +58,11 @@ export function TombolDaftar({
         }
     }
 
+    // --- RENDER JIKA SUDAH TERDAFTAR ---
     if (isRegistered) {
         if (status === "DITOLAK") {
             return <Button disabled className="w-full rounded-xl bg-slate-100 text-slate-400">Pengajuan Ditolak</Button>;
         }
-
         return (
             <Button
                 variant="outline" onClick={handleBatal} disabled={isLoading}
@@ -67,17 +73,52 @@ export function TombolDaftar({
         );
     }
 
+    // --- RENDER JIKA BELUM TERDAFTAR ---
+    if (tipe === "UMUM") {
+        return (
+            <Button onClick={handleDaftarUmum} disabled={isLoading} className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><CheckCircle2 className="mr-2 h-4 w-4" /> Daftar Sekarang</>}
+            </Button>
+        );
+    }
+
+    // JIKA TIPE KHUSUS, RENDER TOMBOL YANG MEMBUKA DIALOG (MODAL)
     return (
-        <Button
-            onClick={handleDaftar}
-            disabled={isLoading}
-            className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-        >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><CheckCircle2 className="mr-2 h-4 w-4" /> Daftar Sekarang</>}
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <Button className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm">
+                    <Clock className="mr-2 h-4 w-4" /> Ajukan Pendaftaran
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md rounded-2xl">
+                <DialogHeader>
+                    <DialogTitle>Ajukan Layanan Khusus</DialogTitle>
+                    <DialogDescription>
+                        Mohon sertakan catatan terkait pengajuan layanan Anda untuk direview oleh Parhalado (Admin).
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="catatan" className="text-slate-700 font-medium">Catatan Tambahan</Label>
+                        <Textarea
+                            id="catatan"
+                            placeholder="Contoh: Nama Anak (untuk Baptis) atau Nama Pasangan (untuk Pernikahan)"
+                            className="resize-none h-24 rounded-xl focus-visible:ring-purple-500"
+                            value={catatan}
+                            onChange={(e) => setCatatan(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <DialogFooter className="flex sm:justify-end gap-2">
+                    <Button variant="outline" className="rounded-xl" onClick={() => setIsDialogOpen(false)}>Batal</Button>
+                    <Button onClick={handleDaftarKhusus} disabled={isLoading} className="rounded-xl bg-purple-600 hover:bg-purple-700">
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Kirim Pengajuan"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
-
 export function TombolPersetujuan({ pendaftaranId }: { pendaftaranId: string }) {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -129,4 +170,15 @@ export function FloatingBackButton({ href }: { href: string }) {
             <span className="hidden sm:inline">Kembali</span>
         </Link>
     )
+}
+
+export function PrintButton() {
+    return (
+        <Button
+            onClick={() => window.print()}
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:scale-105"
+        >
+            <Printer className="mr-2 h-4 w-4" /> Cetak Daftar Hadir
+        </Button>
+    );
 }
