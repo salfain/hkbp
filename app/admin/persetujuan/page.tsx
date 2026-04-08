@@ -7,8 +7,8 @@ export default async function PersetujuanPage() {
     const pendaftaran = await getPendaftaranMenunggu();
 
     return (
-        <div className="space-y-6">
-            <div>
+        <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="space-y-2">
                 <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
                     <ClipboardList className="h-8 w-8 text-orange-600" />
                     Persetujuan Layanan Khusus
@@ -26,7 +26,7 @@ export default async function PersetujuanPage() {
                 ) : (
                     pendaftaran.map((item) => (
                         <Card key={item.id} className="rounded-2xl border-orange-100 shadow-sm bg-orange-50/30">
-                            <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <CardContent className="px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div className="space-y-1">
                                     <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-md uppercase">
                                         {item.kegiatan.kategori}

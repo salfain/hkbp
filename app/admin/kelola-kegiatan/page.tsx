@@ -1,7 +1,7 @@
 import { getDaftarKegiatan } from "@/actions/kegiatan";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, MapPin, Clock, Users } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Users, ClipboardList } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import FormTambahKegiatan from "@/components/forms/FormTambahKegiatan";
 import RowActionKegiatan from "@/components/forms/RowActionKegiatan";
+import CallToActionAlert from "@/components/CallToActionAlert";
 
 export default async function KelolaKegiatanPage() {
     // Ambil data terpisah
@@ -48,6 +49,7 @@ export default async function KelolaKegiatanPage() {
                         </Button>
                     </Link>
                 </TableCell>
+
                 <TableCell className="text-right pr-6">
                     <RowActionKegiatan kegiatan={kegiatan} />
                 </TableCell>
@@ -79,6 +81,18 @@ export default async function KelolaKegiatanPage() {
 
                 {["umum", "khusus"].map((tab) => (
                     <TabsContent key={tab} value={tab} className="animate-in fade-in duration-300">
+                        {tab === "khusus" && (
+                            <CallToActionAlert
+                                variant="warning"
+                                icon={ClipboardList}
+                                title="Tinjau Pengajuan Masuk"
+                                description={
+                                    <>Pengajuan layanan khusus yang belum di-ACC <strong>tidak akan tampil di tabel ini</strong>. Silakan periksa halaman persetujuan.</>
+                                }
+                                actionText="Buka Persetujuan"
+                                actionLink="/admin/persetujuan"
+                            />
+                        )}
                         <Card className="rounded-2xl border-none shadow-md overflow-hidden bg-white gap-0">
                             <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
                                 <CardTitle className="text-lg font-bold text-slate-800">

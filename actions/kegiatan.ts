@@ -5,7 +5,21 @@ import { revalidatePath } from 'next/cache'
 
 export async function getDaftarKegiatan (tipe?: 'UMUM' | 'KHUSUS') {
   return await prisma.kegiatan.findMany({
-    where: tipe ? { tipeKegiatan: tipe } : {},
+    where:
+      tipe === 'KHUSUS'
+        ? {
+            tipeKegiatan: 'KHUSUS',
+            // HANYA tampilkan kegiatan khusus jika pendaftarannya sudah di-ACC
+            pendaftaran: { some: { status: { in: ['TERDAFTAR', 'HADIR'] } } }
+          }
+        : tipe === 'UMUM'
+        ? { tipeKegiatan: 'UMUM' }
+        : {},
+    include: {
+      pendaftaran: {
+        where: { status: { in: ['TERDAFTAR', 'HADIR'] } }
+      }
+    },
     orderBy: { tanggalMulai: 'desc' }
   })
 }
@@ -28,7 +42,6 @@ export async function getDetailKegiatanPeserta (kegiatanId: string) {
     }
   })
 }
-
 export async function tambahKegiatan (formData: FormData) {
   try {
     const namaAcara = formData.get('namaAcara') as string
