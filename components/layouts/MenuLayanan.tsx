@@ -63,7 +63,7 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
 
             {/* Modal Form Pengajuan */}
             <Dialog open={!!selectedLayanan} onOpenChange={(open) => !open && setSelectedLayanan(null)}>
-                <DialogContent className="sm:max-w-md rounded-2xl">
+                <DialogContent className="sm:max-w-lvh  rounded-2xl">
                     <DialogHeader>
                         <DialogTitle className="text-xl">Ajukan {selectedLayanan}</DialogTitle>
                         <DialogDescription>
@@ -71,7 +71,7 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <form onSubmit={handleSubmit} className="space-y-5 py-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <input type="hidden" name="userId" value={userId} />
                         <input type="hidden" name="kategori" value={selectedLayanan || ""} />
 
@@ -79,6 +79,36 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
                             <Label className="text-slate-700">Pilih Tanggal & Waktu Pelaksanaan</Label>
                             <Input name="tanggalPelaksanaan" type="datetime-local" required className="h-11 rounded-xl" />
                         </div>
+                        {selectedLayanan === "Pemberkatan Pernikahan" && (
+                            <div className="space-y-4 border-t pt-4">
+                                <div className="grid grid-cols-2 gap-4 ">
+                                    <div className="space-y-2">
+                                        <h4 className="font-semibold text-slate-800">Data Calon Pengantin Pria</h4>
+                                        <Input name="namaPria" placeholder="Nama Lengkap Pria" required />
+                                        <Input name="asalGerejaPria" placeholder="Asal Gereja Pria" required />
+                                        <Input name="namaAyahPria" placeholder="Nama Ayah Pria" required />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h4 className="font-semibold text-slate-800">Data Calon Pengantin Perempuan</h4>
+                                        <Input name="namaWanita" placeholder="Nama Lengkap Perempuan" required />
+                                        <Input name="asalGerejaWanita" placeholder="Asal Gereja Perempuan" required />
+                                        <Input name="namaAyahWanita" placeholder="Nama Ayah Perempuan" required />
+                                    </div>
+                                </div>
+
+                                <h4 className="font-semibold text-slate-800 mt-4">Rencana Pelaksanaan</h4>
+                                <Input name="tanggalPelaksanaan" type="datetime-local" required />
+                            </div>
+                        )}
+
+                        {selectedLayanan === "Baptisan Kudus" && (
+                            <div className="space-y-4 border-t pt-4">
+                                <Input name="namaAnak" placeholder="Nama Lengkap Anak" required />
+                                <Input name="tempatTanggalLahirAnak" placeholder="Tempat, Tanggal Lahir Anak" required />
+                                <Input name="tanggalPelaksanaan" type="date" required />
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <Label className="text-slate-700">Keterangan / Catatan Tambahan</Label>
                             <Textarea

@@ -77,6 +77,7 @@ model Pendaftaran {
   waktuDaftar DateTime          @default(now())
   status      StatusPendaftaran @default(TERDAFTAR)
   catatan     String?           @db.Text // Untuk pesan tambahan dari jemaat (misal: "Nama Pasangan: Budi & Ani")
+  formulirData Json?
   waktuHadir  DateTime?
 
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)

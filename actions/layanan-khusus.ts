@@ -14,6 +14,17 @@ export async function ajukanLayananKhusus (formData: FormData) {
     const user = await prisma.user.findUnique({ where: { id: userId } })
     if (!user) return { success: false, message: 'User tidak ditemukan' }
 
+    // Kumpulkan semua data form menjadi satu objek JSON dinamis
+    const formObject: Record<string, string> = {}
+    formData.forEach((value, key) => {
+      // Abaikan field standar yang bukan bagian dari JSON
+      if (
+        !['userId', 'kategori', 'tanggalPelaksanaan', 'catatan'].includes(key)
+      ) {
+        formObject[key] = value.toString()
+      }
+    })
+
     // 1. Buat Kegiatan (Diajukan oleh Jemaat)
     const kegiatanBaru = await prisma.kegiatan.create({
       data: {
@@ -31,6 +42,7 @@ export async function ajukanLayananKhusus (formData: FormData) {
         userId: userId,
         kegiatanId: kegiatanBaru.id,
         status: 'MENUNGGU_ACC',
+        formulirData: formObject,
         catatan: catatan
       }
     })
