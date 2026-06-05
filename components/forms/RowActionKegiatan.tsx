@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { toast } from "sonner";
 import { MoreHorizontal, Edit, Trash2, Loader2 } from "lucide-react";
 import { updateKegiatan, hapusKegiatan } from "@/actions/kegiatan";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,27 +23,27 @@ export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) 
 
     async function handleEdit(formData: FormData) {
         setIsLoading(true);
-        const result = await updateKegiatan(kegiatan.id, formData);
+        const result = await runActionWithToast(
+            () => updateKegiatan(kegiatan.id, formData),
+            "Menyimpan perubahan kegiatan..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             setIsEditOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
     async function handleDelete() {
         setIsLoading(true);
-        const result = await hapusKegiatan(kegiatan.id);
+        const result = await runActionWithToast(
+            () => hapusKegiatan(kegiatan.id),
+            "Menghapus kegiatan..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             setIsDeleteOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
@@ -58,10 +58,10 @@ export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) 
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                    <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
+                    <DropdownMenuItem disabled={isLoading} onClick={() => setIsEditOpen(true)} className="cursor-pointer">
                         <Edit className="mr-2 h-4 w-4 text-indigo-600" /> Edit Jadwal
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsDeleteOpen(true)} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
+                    <DropdownMenuItem disabled={isLoading} onClick={() => setIsDeleteOpen(true)} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
                         <Trash2 className="mr-2 h-4 w-4" /> Hapus Jadwal
                     </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -109,8 +109,8 @@ export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) 
                         </div>
                         <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0 justify-end">
                             <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
-                            <Button type="submit" className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Simpan Perubahan"}
+                            <Button type="submit" className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white" disabled={isLoading} aria-busy={isLoading}>
+                                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menyimpan...</> : "Simpan Perubahan"}
                             </Button>
                         </div>
                     </form>
@@ -128,8 +128,8 @@ export default function RowActionKegiatan({ kegiatan }: { kegiatan: Kegiatan }) 
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel className="rounded-xl">Batal</AlertDialogCancel>
-                        <Button variant="destructive" className="rounded-xl" onClick={handleDelete} disabled={isLoading}>
-                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ya, Hapus Kegiatan"}
+                        <Button variant="destructive" className="rounded-xl" onClick={handleDelete} disabled={isLoading} aria-busy={isLoading}>
+                            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menghapus...</> : "Ya, Hapus Kegiatan"}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>

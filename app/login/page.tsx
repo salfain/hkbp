@@ -19,23 +19,27 @@ export default function LoginPage() {
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsLoading(true);
+        const toastId = toast.loading("Memverifikasi akun...");
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
 
-        // Proses autentikasi
-        const result = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-        });
+        try {
+            // Proses autentikasi
+            const result = await signIn("credentials", {
+                email,
+                password,
+                redirect: false,
+            });
 
-        if (result?.error) {
-            toast.error(result.error);
-            setIsLoading(false);
-        } else {
-            toast.success("Login berhasil! Mengalihkan...");
+            if (result?.error) {
+                toast.error(result.error, { id: toastId });
+                setIsLoading(false);
+                return;
+            }
+
+            toast.success("Login berhasil. Mengalihkan...", { id: toastId });
 
             // Ambil session terbaru untuk mengecek role
             const session = await getSession();
@@ -50,6 +54,10 @@ export default function LoginPage() {
             }
 
             router.refresh();
+        } catch (error) {
+            console.error(error);
+            toast.error("Login gagal diproses. Silakan coba lagi.", { id: toastId });
+            setIsLoading(false);
         }
     }
 
@@ -104,6 +112,7 @@ export default function LoginPage() {
                             type="submit"
                             className="w-full h-11 rounded-xl text-md font-semibold bg-blue-600 hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
                             disabled={isLoading}
+                            aria-busy={isLoading}
                         >
                             {isLoading ? (
                                 <React.Fragment>

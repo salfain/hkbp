@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { updateProfilUser } from "@/actions/profile";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,16 +29,16 @@ export default function FormProfil({ user }: { user: UserProfile }) {
 
     async function handleAction(formData: FormData) {
         setIsLoading(true);
-        const result = await updateProfilUser(user.id, formData);
+        const result = await runActionWithToast(
+            () => updateProfilUser(user.id, formData),
+            "Menyimpan perubahan profil..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             // Reset input password setelah sukses agar tidak membingungkan
             const passwordInput = document.getElementById('password') as HTMLInputElement;
             if (passwordInput) passwordInput.value = '';
-        } else {
-            toast.error(result.message);
         }
     }
 
@@ -121,6 +121,7 @@ export default function FormProfil({ user }: { user: UserProfile }) {
                             type="submit"
                             className="h-11 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-all hover:-translate-y-0.5"
                             disabled={isLoading}
+                            aria-busy={isLoading}
                         >
                             {isLoading ? (
                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menyimpan...</>

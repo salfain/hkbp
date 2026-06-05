@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { toast } from "sonner";
 import { ajukanLayananKhusus } from "@/actions/layanan-khusus";
-import { Card, CardContent } from "@/components/ui/card";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,14 +28,14 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
         setIsLoading(true);
         const formData = new FormData(event.currentTarget);
 
-        const res = await ajukanLayananKhusus(formData);
+        const res = await runActionWithToast(
+            () => ajukanLayananKhusus(formData),
+            "Mengirim pengajuan layanan..."
+        );
         setIsLoading(false);
 
         if (res.success) {
-            toast.success(res.message);
             setSelectedLayanan(null); // Tutup modal
-        } else {
-            toast.error(res.message);
         }
     }
 
@@ -44,20 +43,19 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
         <React.Fragment >
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {daftarLayanan.map((item) => (
-                    <Card
+                    <button
                         key={item.id}
+                        type="button"
                         onClick={() => setSelectedLayanan(item.id)}
-                        className={`cursor-pointer rounded-2xl border-slate-200 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 ${item.border}`}
+                        className={`flex min-h-36 flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:p-6 ${item.border}`}
                     >
-                        <CardContent className="p-4 sm:p-6 flex flex-col items-center justify-center text-center gap-3 h-full">
-                            <div className={`p-3 rounded-2xl ${item.bg}`}>
-                                <item.icon className={`h-8 w-8 ${item.color}`} />
-                            </div>
-                            <span className="font-semibold text-sm text-slate-800 leading-tight">
-                                {item.id}
-                            </span>
-                        </CardContent>
-                    </Card>
+                        <div className={`p-3 rounded-2xl ${item.bg}`}>
+                            <item.icon className={`h-8 w-8 ${item.color}`} />
+                        </div>
+                        <span className="text-sm font-semibold leading-tight text-slate-800">
+                            {item.id}
+                        </span>
+                    </button>
                 ))}
             </div>
 
@@ -123,8 +121,8 @@ export default function MenuLayananKhusus({ userId }: { userId: string }) {
                             <Button type="button" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setSelectedLayanan(null)}>
                                 Batal
                             </Button>
-                            <Button type="submit" disabled={isLoading} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Kirim Pengajuan"}
+                            <Button type="submit" disabled={isLoading} aria-busy={isLoading} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
+                                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mengirim...</> : "Kirim Pengajuan"}
                             </Button>
                         </DialogFooter>
                     </form>

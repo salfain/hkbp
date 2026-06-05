@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, ArrowLeft, CheckCircle, XCircle, Clock, Printer } from "lucide-react";
 import { daftarKegiatan, batalDaftarKegiatan } from "@/actions/pendaftaran";
@@ -23,39 +23,37 @@ export function TombolDaftar({
     // Fungsi untuk pendaftaran UMUM (Tanpa catatan)
     async function handleDaftarUmum() {
         setIsLoading(true);
-        const res = await daftarKegiatan(userId, kegiatanId, "UMUM");
+        const res = await runActionWithToast(
+            () => daftarKegiatan(userId, kegiatanId, "UMUM"),
+            "Mendaftarkan kegiatan..."
+        );
         setIsLoading(false);
-        if (res.success) {
-            toast.success(res.message);
-        } else {
-            toast.error(res.message);
-        }
+        return res;
     }
 
     // Fungsi untuk pendaftaran KHUSUS (Dengan catatan dari Modal)
     async function handleDaftarKhusus() {
         setIsLoading(true);
-        const res = await daftarKegiatan(userId, kegiatanId, "KHUSUS", catatan);
+        const res = await runActionWithToast(
+            () => daftarKegiatan(userId, kegiatanId, "KHUSUS", catatan),
+            "Mengirim pengajuan..."
+        );
         setIsLoading(false);
 
         if (res.success) {
-            toast.success(res.message);
             setIsDialogOpen(false); // Tutup modal
-        } else {
-            toast.error(res.message);
         }
     }
 
     async function handleBatal() {
         if (!confirm("Yakin ingin membatalkan pendaftaran ini?")) return;
         setIsLoading(true);
-        const res = await batalDaftarKegiatan(userId, kegiatanId);
+        const res = await runActionWithToast(
+            () => batalDaftarKegiatan(userId, kegiatanId),
+            "Membatalkan pendaftaran..."
+        );
         setIsLoading(false);
-        if (res.success) {
-            toast.success(res.message);
-        } else {
-            toast.error(res.message);
-        }
+        return res;
     }
 
     // --- RENDER JIKA SUDAH TERDAFTAR ---
@@ -66,9 +64,10 @@ export function TombolDaftar({
         return (
             <Button
                 variant="outline" onClick={handleBatal} disabled={isLoading}
+                aria-busy={isLoading}
                 className={`w-full rounded-xl ${status === 'MENUNGGU_ACC' ? 'border-yellow-200 text-yellow-600 hover:bg-yellow-50' : 'border-red-200 text-red-600 hover:bg-red-50'}`}
             >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (status === "MENUNGGU_ACC" ? "Batalkan Pengajuan" : "Batalkan Pendaftaran")}
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...</> : (status === "MENUNGGU_ACC" ? "Batalkan Pengajuan" : "Batalkan Pendaftaran")}
             </Button>
         );
     }
@@ -76,8 +75,8 @@ export function TombolDaftar({
     // --- RENDER JIKA BELUM TERDAFTAR ---
     if (tipe === "UMUM") {
         return (
-            <Button onClick={handleDaftarUmum} disabled={isLoading} className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><CheckCircle2 className="mr-2 h-4 w-4" /> Daftar Sekarang</>}
+            <Button onClick={handleDaftarUmum} disabled={isLoading} aria-busy={isLoading} className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mendaftarkan...</> : <><CheckCircle2 className="mr-2 h-4 w-4" /> Daftar Sekarang</>}
             </Button>
         );
     }
@@ -111,8 +110,8 @@ export function TombolDaftar({
                 </div>
                 <DialogFooter className="flex sm:justify-end gap-2">
                     <Button variant="outline" className="rounded-xl" onClick={() => setIsDialogOpen(false)}>Batal</Button>
-                    <Button onClick={handleDaftarKhusus} disabled={isLoading} className="rounded-xl bg-purple-600 hover:bg-purple-700">
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Kirim Pengajuan"}
+                    <Button onClick={handleDaftarKhusus} disabled={isLoading} aria-busy={isLoading} className="rounded-xl bg-purple-600 hover:bg-purple-700">
+                        {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mengirim...</> : "Kirim Pengajuan"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -128,14 +127,12 @@ export function TombolPersetujuan({ pendaftaranId }: { pendaftaranId: string }) 
         }
 
         setIsLoading(true);
-        const res = await ubahStatusPendaftaran(pendaftaranId, status);
+        const res = await runActionWithToast(
+            () => ubahStatusPendaftaran(pendaftaranId, status),
+            status === "TERDAFTAR" ? "Menyetujui pengajuan..." : "Menolak pengajuan..."
+        );
         setIsLoading(false);
-
-        if (res.success) {
-            toast.success(res.message);
-        } else {
-            toast.error(res.message);
-        }
+        return res;
     }
 
     return (
@@ -143,18 +140,20 @@ export function TombolPersetujuan({ pendaftaranId }: { pendaftaranId: string }) 
             <Button
                 onClick={() => handleAction("TERDAFTAR")}
                 disabled={isLoading}
+                aria-busy={isLoading}
                 className="flex-1 sm:flex-none rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-sm"
             >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><CheckCircle className="mr-2 h-4 w-4" /> ACC</>}
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Proses...</> : <><CheckCircle className="mr-2 h-4 w-4" /> ACC</>}
             </Button>
 
             <Button
                 variant="outline"
                 onClick={() => handleAction("DITOLAK")}
                 disabled={isLoading}
+                aria-busy={isLoading}
                 className="flex-1 sm:flex-none rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
             >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><XCircle className="mr-2 h-4 w-4" /> Tolak</>}
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Proses...</> : <><XCircle className="mr-2 h-4 w-4" /> Tolak</>}
             </Button>
         </div>
     );

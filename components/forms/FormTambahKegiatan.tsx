@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { toast } from "sonner";
 import { tambahKegiatan } from "@/actions/kegiatan";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,15 +23,15 @@ export default function FormTambahKegiatan() {
 
     async function handleAction(formData: FormData) {
         setIsLoading(true);
-        const result = await tambahKegiatan(formData);
+        const result = await runActionWithToast(
+            () => tambahKegiatan(formData),
+            "Menyimpan jadwal kegiatan..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             formRef.current?.reset();
             setIsOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
@@ -119,6 +119,7 @@ export default function FormTambahKegiatan() {
                             type="submit"
                             className="h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all"
                             disabled={isLoading}
+                            aria-busy={isLoading}
                         >
                             {isLoading ? (
                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menyimpan...</>

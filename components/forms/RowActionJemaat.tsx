@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { toast } from "sonner";
 import { MoreHorizontal, Edit, Trash2, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { updateJemaat, hapusJemaat, ubahStatusAkun } from "@/actions/jemaat";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,39 +23,38 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
 
     async function handleEdit(formData: FormData) {
         setIsLoading(true);
-        const result = await updateJemaat(jemaat.id, formData);
+        const result = await runActionWithToast(
+            () => updateJemaat(jemaat.id, formData),
+            "Menyimpan perubahan jemaat..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             setIsEditOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
     async function handleDelete() {
         setIsLoading(true);
-        const result = await hapusJemaat(jemaat.id);
+        const result = await runActionWithToast(
+            () => hapusJemaat(jemaat.id),
+            "Menghapus data jemaat..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             setIsDeleteOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
     async function handleStatus(status: "AKTIF" | "DITOLAK") {
         setIsLoading(true);
-        const res = await ubahStatusAkun(jemaat.id, status);
+        const res = await runActionWithToast(
+            () => ubahStatusAkun(jemaat.id, status),
+            status === "AKTIF" ? "Menyetujui akun jemaat..." : "Menolak akun jemaat..."
+        );
         setIsLoading(false);
-        if (res.success) {
-            toast.success(res.message);
-        } else {
-            toast.error(res.message);
-        }
+        return res;
     }
 
     return (
@@ -70,19 +69,19 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                 <DropdownMenuContent align="end" className="w-50 rounded-xl">
                     {jemaat.statusAkun === "PENDING" && (
                         <React.Fragment>
-                            <DropdownMenuItem onClick={() => handleStatus("AKTIF")} className="cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
+                            <DropdownMenuItem disabled={isLoading} onClick={() => handleStatus("AKTIF")} className="cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
                                 <CheckCircle className="mr-2 h-4 w-4" /> ACC Pendaftaran
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatus("DITOLAK")} className="cursor-pointer text-orange-600 focus:text-orange-700 focus:bg-orange-50">
+                            <DropdownMenuItem disabled={isLoading} onClick={() => handleStatus("DITOLAK")} className="cursor-pointer text-orange-600 focus:text-orange-700 focus:bg-orange-50">
                                 <XCircle className="mr-2 h-4 w-4" /> Tolak Jemaat
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                         </React.Fragment>
                     )}
-                    <DropdownMenuItem onClick={() => setIsEditOpen(true)} className="cursor-pointer">
+                    <DropdownMenuItem disabled={isLoading} onClick={() => setIsEditOpen(true)} className="cursor-pointer">
                         <Edit className="mr-2 h-4 w-4 text-blue-600" /> Edit Profil
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsDeleteOpen(true)} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
+                    <DropdownMenuItem disabled={isLoading} onClick={() => setIsDeleteOpen(true)} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
                         <Trash2 className="mr-2 h-4 w-4" /> Hapus Data
                     </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -126,8 +125,8 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                         </div>
                         <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0 justify-end">
                             <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setIsEditOpen(false)}>Batal</Button>
-                            <Button type="submit" className="h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Simpan Perubahan"}
+                            <Button type="submit" className="h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading} aria-busy={isLoading}>
+                                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menyimpan...</> : "Simpan Perubahan"}
                             </Button>
                         </div>
                     </form>
@@ -145,8 +144,8 @@ export default function RowActionJemaat({ jemaat }: { jemaat: Jemaat }) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel className="rounded-xl">Batal</AlertDialogCancel>
-                        <Button variant="destructive" className="rounded-xl" onClick={handleDelete} disabled={isLoading}>
-                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ya, Hapus"}
+                        <Button variant="destructive" className="rounded-xl" onClick={handleDelete} disabled={isLoading} aria-busy={isLoading}>
+                            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menghapus...</> : "Ya, Hapus"}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>

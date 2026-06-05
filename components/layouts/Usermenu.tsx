@@ -1,7 +1,9 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { Loader2, LogOut, User as UserIcon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,8 +21,23 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ name, role }: UserMenuProps) {
+    const [isSigningOut, setIsSigningOut] = useState(false);
     const initials = name?.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase() || "U";
     const profileLink = role === "ADMIN" ? "/admin/profil" : "/jemaat/profil";
+
+    async function handleSignOut() {
+        setIsSigningOut(true);
+        const toastId = toast.loading("Mengeluarkan akun...");
+
+        try {
+            await signOut({ callbackUrl: "/login" });
+            toast.success("Berhasil keluar.", { id: toastId });
+        } catch (error) {
+            console.error(error);
+            toast.error("Gagal keluar. Silakan coba lagi.", { id: toastId });
+            setIsSigningOut(false);
+        }
+    }
 
     return (
         <DropdownMenu>
@@ -47,11 +64,16 @@ export function UserMenu({ name, role }: UserMenuProps) {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
                     className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors focus:text-red-700 focus:bg-red-50"
                 >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
+                    {isSigningOut ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <LogOut className="mr-2 h-4 w-4" />
+                    )}
+                    <span>{isSigningOut ? "Keluar..." : "Keluar"}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

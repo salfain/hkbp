@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { registerJemaat } from "@/actions/auth";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,15 +20,15 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         const formData = new FormData(event.currentTarget);
-        const result = await registerJemaat(formData);
+        const result = await runActionWithToast(
+            () => registerJemaat(formData),
+            "Mengirim pendaftaran..."
+        );
 
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message, { duration: 5000 });
             router.push("/login");
-        } else {
-            toast.error(result.message);
         }
     }
 
@@ -69,8 +69,8 @@ export default function RegisterPage() {
                             <Label>Password</Label>
                             <Input name="password" type="password" required className="h-11 rounded-xl" />
                         </div>
-                        <Button type="submit" className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Kirim Pendaftaran"}
+                        <Button type="submit" className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700" disabled={isLoading} aria-busy={isLoading}>
+                            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mengirim...</> : "Kirim Pendaftaran"}
                         </Button>
                     </form>
                 </CardContent>

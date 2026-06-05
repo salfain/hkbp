@@ -2,11 +2,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getKegiatanTersedia, getJadwalSaya } from "@/actions/pendaftaran";
 import { Card } from "@/components/ui/card";
-import { CalendarDays, MapPin, Clock, History, Send } from "lucide-react";
+import { CalendarDays, MapPin, Clock, History, Send, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import MenuLayananKhusus from "@/components/layouts/MenuLayanan";
 import { TombolDaftar } from "@/components/Button";
+import Link from "next/link";
 
 export default async function JemaatDashboard() {
     const session = await getServerSession(authOptions);
@@ -29,6 +30,15 @@ export default async function JemaatDashboard() {
                     <p className="text-blue-100 max-w-xl">
                         Selamat datang di portal pelayanan jemaat. Anda dapat melihat jadwal ibadah, mengajukan layanan khusus, dan memantau status pengajuan Anda.
                     </p>
+                    <div className="pt-4">
+                        <Link
+                            href="/jemaat/chat"
+                            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-50 active:scale-[0.98]"
+                        >
+                            <MessageCircle className="h-4 w-4" />
+                            Chat Admin
+                        </Link>
+                    </div>
                 </div>
                 {/* Ornamen */}
                 <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-2xl" />

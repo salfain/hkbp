@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, CalendarDays, FileSpreadsheet } from "lucide-react";
+import { LayoutDashboard, Users, CalendarDays, FileSpreadsheet, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils"; // Fungsi bawaan shadcn
 
 const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Kelola Jemaat", href: "/admin/kelola-jemaat", icon: Users },
     { name: "Kelola Kegiatan", href: "/admin/kelola-kegiatan", icon: CalendarDays },
+    { name: "Chat Jemaat", href: "/admin/chat", icon: MessageCircle },
     { name: "Ekspor Laporan", href: "/admin/laporan", icon: FileSpreadsheet },
 ];
 

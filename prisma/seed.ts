@@ -13,6 +13,8 @@ async function main () {
   console.log('🌱 Memulai proses seeding database...')
 
   // 1. Bersihkan database sebelum melakukan seeding (Urutan penting agar relasi tidak error)
+  await prisma.chatMessage.deleteMany()
+  await prisma.chatThread.deleteMany()
   await prisma.pendaftaran.deleteMany()
   await prisma.kegiatan.deleteMany()
   await prisma.user.deleteMany()
@@ -27,7 +29,7 @@ async function main () {
   console.log('👤 Membuat data Users...')
 
   // Admin
-  await prisma.user.create({
+  const admin = await prisma.user.create({
     data: {
       namaLengkap: 'Administrator HKBP',
       email: 'admin@hkbp.local',
@@ -228,6 +230,41 @@ async function main () {
       status: StatusPendaftaran.DITOLAK,
       catatan: 'Mohon ikuti kelas sidi.'
     }
+  })
+
+  // ==========================================
+  // 6. SEEDING CHAT JEMAAT & ADMIN
+  // ==========================================
+  console.log('💬 Membuat contoh percakapan chat...')
+
+  const chatStart = new Date()
+  chatStart.setHours(chatStart.getHours() - 2)
+
+  const chatReply = new Date()
+  chatReply.setHours(chatReply.getHours() - 1)
+
+  const chatThread = await prisma.chatThread.create({
+    data: {
+      jemaatId: jemaatAktif[0].id,
+      lastMessageAt: chatReply
+    }
+  })
+
+  await prisma.chatMessage.createMany({
+    data: [
+      {
+        threadId: chatThread.id,
+        senderId: jemaatAktif[0].id,
+        body: 'Horas Admin, saya ingin konfirmasi jadwal pelayanan pernikahan.',
+        createdAt: chatStart
+      },
+      {
+        threadId: chatThread.id,
+        senderId: admin.id,
+        body: 'Horas, silakan lengkapi catatan pengajuan dan admin akan melakukan pengecekan jadwal.',
+        createdAt: chatReply
+      }
+    ]
   })
 
   console.log('🎉 Seeding Selesai! Data testing siap digunakan.')

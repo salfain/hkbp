@@ -34,6 +34,11 @@ enum StatusPendaftaran {
   TIDAK_HADIR  // Tidak datang
 }
 
+enum ChatThreadStatus {
+  OPEN
+  CLOSED
+}
+
 model User {
   id           String      @id @default(cuid())
   namaLengkap  String
@@ -50,6 +55,8 @@ model User {
   updatedAt    DateTime    @updatedAt
 
   pendaftaran  Pendaftaran[]
+  chatThreads   ChatThread[] @relation("ChatThreadJemaat")
+  chatMessages  ChatMessage[] @relation("ChatMessageSender")
 }
 
 model Kegiatan {
@@ -84,4 +91,33 @@ model Pendaftaran {
   kegiatan    Kegiatan          @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
 
   @@unique([userId, kegiatanId])
+}
+
+model ChatThread {
+  id            String           @id @default(cuid())
+  jemaatId      String           @unique
+  status        ChatThreadStatus @default(OPEN)
+  lastMessageAt DateTime         @default(now())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  jemaat        User             @relation("ChatThreadJemaat", fields: [jemaatId], references: [id], onDelete: Cascade)
+  messages      ChatMessage[]
+
+  @@index([status])
+  @@index([lastMessageAt])
+}
+
+model ChatMessage {
+  id        String     @id @default(cuid())
+  threadId  String
+  senderId  String
+  body      String     @db.Text
+  createdAt DateTime   @default(now())
+
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender    User       @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+  @@index([senderId])
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { tambahJemaat } from "@/actions/jemaat";
+import { runActionWithToast } from "@/components/feedback/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,15 +23,15 @@ export default function FormTambahJemaat() {
 
     async function handleAction(formData: FormData) {
         setIsLoading(true);
-        const result = await tambahJemaat(formData);
+        const result = await runActionWithToast(
+            () => tambahJemaat(formData),
+            "Menyimpan data jemaat..."
+        );
         setIsLoading(false);
 
         if (result.success) {
-            toast.success(result.message);
             formRef.current?.reset();
             setIsOpen(false);
-        } else {
-            toast.error(result.message);
         }
     }
 
@@ -122,6 +122,7 @@ export default function FormTambahJemaat() {
                             type="submit"
                             className="h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
                             disabled={isLoading}
+                            aria-busy={isLoading}
                         >
                             {isLoading ? (
                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Menyimpan...</>
