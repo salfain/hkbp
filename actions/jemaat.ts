@@ -27,6 +27,7 @@ export async function tambahJemaat (formData: FormData) {
     })
 
     revalidatePath('/admin/kelola-jemaat')
+    revalidatePath('/admin')
 
     return { success: true, message: 'Data jemaat berhasil ditambahkan.' }
   } catch (error) {
@@ -68,6 +69,7 @@ export async function hapusJemaat (id: string) {
       where: { id }
     })
     revalidatePath('/admin/kelola-jemaat')
+    revalidatePath('/admin')
     return { success: true, message: 'Data jemaat berhasil dihapus.' }
   } catch (error) {
     console.error('Gagal hapus jemaat:', error)
@@ -85,6 +87,7 @@ export async function ubahStatusAkun (
       data: { statusAkun: statusBaru }
     })
     revalidatePath('/admin/kelola-jemaat')
+    revalidatePath('/admin')
     return {
       success: true,
       message: `Status akun berhasil diubah menjadi ${statusBaru}.`

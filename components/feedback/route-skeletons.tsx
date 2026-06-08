@@ -42,6 +42,27 @@ export function DashboardSkeleton() {
                 ))}
             </div>
             <MetricCardsSkeleton />
+            <div className="grid gap-4 xl:grid-cols-2">
+                {Array.from({ length: 2 }).map((_, index) => (
+                    <Card key={index} className="rounded-2xl border-none bg-white shadow-md">
+                        <CardHeader className="pb-2">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                <div className="space-y-2">
+                                    <Skeleton className="h-6 w-40" />
+                                    <Skeleton className="h-4 w-72 max-w-full" />
+                                </div>
+                                <div className="space-y-2 sm:text-right">
+                                    <Skeleton className="h-8 w-20" />
+                                    <Skeleton className="h-7 w-44 rounded-full" />
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pt-2">
+                            <Skeleton className="h-72 rounded-xl" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }

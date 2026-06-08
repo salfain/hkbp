@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { revalidatePath } from 'next/cache'
 
 export async function registerJemaat (formData: FormData) {
   try {
@@ -33,6 +34,9 @@ export async function registerJemaat (formData: FormData) {
         statusAkun: 'PENDING' // Otomatis PENDING
       }
     })
+
+    revalidatePath('/admin')
+    revalidatePath('/admin/kelola-jemaat')
 
     return {
       success: true,

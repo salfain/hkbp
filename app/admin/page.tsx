@@ -1,4 +1,5 @@
 import { getDashboardMetrics } from "@/actions/admin-dashboard";
+import { AdminMembershipCharts } from "@/components/charts/AdminMembershipCharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, UserPlus, ClipboardList, CalendarDays, MessageCircle, UserCheck } from "lucide-react";
 import CallToActionAlert from "@/components/CallToActionAlert";
@@ -93,6 +94,12 @@ export default async function AdminDashboardPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <AdminMembershipCharts
+                data={metrics.monthlyJemaatStats}
+                totalJemaat={metrics.totalJemaat}
+                totalJemaatAktif={metrics.totalJemaatAktif}
+            />
         </div>
     );
 }
