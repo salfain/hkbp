@@ -41,19 +41,26 @@ export default function LoginPage() {
 
             toast.success("Login berhasil. Mengalihkan...", { id: toastId });
 
-            // Ambil session terbaru untuk mengecek role
-            const session = await getSession();
-
-            // Arahkan ke panel berdasarkan role
-            if (session?.user?.role === "ADMIN") {
-                router.push("/admin");
-            } else if (session?.user?.role === "JEMAAT") {
-                router.push("/jemaat");
-            } else {
-                router.push("/"); // Fallback jika role tidak terdefinisi
+            // Ambil session terbaru untuk mengecek role.
+            // Cookie sesi kadang belum tersedia tepat setelah signIn,
+            // jadi kita coba beberapa kali sampai role terbaca.
+            let role: string | undefined;
+            for (let attempt = 0; attempt < 5; attempt++) {
+                const session = await getSession();
+                role = session?.user?.role;
+                if (role) break;
+                await new Promise((r) => setTimeout(r, 200));
             }
 
-            router.refresh();
+            // Arahkan ke panel berdasarkan role.
+            // Gunakan navigasi penuh agar server membaca cookie sesi terbaru.
+            if (role === "ADMIN") {
+                window.location.href = "/admin";
+            } else if (role === "JEMAAT") {
+                window.location.href = "/jemaat";
+            } else {
+                window.location.href = "/"; // Fallback jika role tidak terdefinisi
+            }
         } catch (error) {
             console.error(error);
             toast.error("Login gagal diproses. Silakan coba lagi.", { id: toastId });

@@ -67,7 +67,7 @@ model Kegiatan {
   tanggalSelesai DateTime?     @db.Timestamp(3)
   lokasi         String?       @db.VarChar(150)
   kuota          Int?
-  kategori       String?       @db.VarChar(36)
+  kategori       String?       @db.VarChar(100)
   tipeKegiatan   TipeKegiatan  @default(UMUM) // Default UMUM
   imageUrl       String?       @db.VarChar(255)
   
