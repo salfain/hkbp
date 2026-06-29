@@ -40,19 +40,19 @@ enum ChatThreadStatus {
 }
 
 model User {
-  id           String      @id @default(cuid())
-  namaLengkap  String
-  email        String      @unique
-  password     String
-  nomorTelepon String?
-  tanggalLahir DateTime
-  alamat       String?
-  sektor       String?
+  id           String      @id @default(cuid()) @db.VarChar(36)
+  namaLengkap  String      @db.VarChar(100)
+  email        String      @unique @db.VarChar(100)
+  password     String      @db.VarChar(255)
+  nomorTelepon String?     @db.VarChar(15)
+  tanggalLahir DateTime    @db.Timestamp(3)
+  alamat       String?     @db.VarChar(255)
+  sektor       String?     @db.VarChar(50)
   role         Role        @default(JEMAAT)
   statusAkun   StatusAkun  @default(PENDING) // Default Register adalah PENDING
 
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime    @default(now()) @db.Timestamp(3)
+  updatedAt    DateTime    @updatedAt @db.Timestamp(3)
 
   pendaftaran  Pendaftaran[]
   chatThreads   ChatThread[] @relation("ChatThreadJemaat")
@@ -60,32 +60,32 @@ model User {
 }
 
 model Kegiatan {
-  id             String        @id @default(cuid())
-  namaAcara      String
-  deskripsi      String?       @db.Text
-  tanggalMulai   DateTime
-  tanggalSelesai DateTime?
-  lokasi         String?
+  id             String        @id @default(cuid()) @db.VarChar(36)
+  namaAcara      String        @db.VarChar(36)
+  deskripsi      String?       @db.VarChar(255)
+  tanggalMulai   DateTime      @db.Timestamp(3)
+  tanggalSelesai DateTime?     @db.Timestamp(3)
+  lokasi         String?       @db.VarChar(150)
   kuota          Int?
-  kategori       String?       
+  kategori       String?       @db.VarChar(36)
   tipeKegiatan   TipeKegiatan  @default(UMUM) // Default UMUM
-  imageUrl       String?
+  imageUrl       String?       @db.VarChar(255)
   
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime      @default(now()) @db.Timestamp(3)
+  updatedAt      DateTime      @updatedAt @db.Timestamp(3)
 
   pendaftaran    Pendaftaran[]
 }
 
 model Pendaftaran {
-  id          String            @id @default(cuid())
-  userId      String
-  kegiatanId  String
-  waktuDaftar DateTime          @default(now())
+  id          String            @id @default(cuid()) @db.VarChar(36)
+  userId      String            @db.VarChar(36)
+  kegiatanId  String            @db.VarChar(36)
+  waktuDaftar DateTime          @default(now()) @db.Timestamp(3)
   status      StatusPendaftaran @default(TERDAFTAR)
-  catatan     String?           @db.Text // Untuk pesan tambahan dari jemaat (misal: "Nama Pasangan: Budi & Ani")
-  formulirData Json?
-  waktuHadir  DateTime?
+  catatan     String?           @db.VarChar(255) // Untuk pesan tambahan dari jemaat (misal: "Nama Pasangan: Budi & Ani")
+  formulirData Json?            @db.JsonB
+  waktuHadir  DateTime?         @db.Timestamp(3)
 
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   kegiatan    Kegiatan          @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
@@ -94,12 +94,12 @@ model Pendaftaran {
 }
 
 model ChatThread {
-  id            String           @id @default(cuid())
-  jemaatId      String           @unique
+  id            String           @id @default(cuid()) @db.VarChar(36)
+  jemaatId      String           @unique @db.VarChar(36)
   status        ChatThreadStatus @default(OPEN)
-  lastMessageAt DateTime         @default(now())
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  lastMessageAt DateTime         @default(now()) @db.Timestamp(3)
+  createdAt     DateTime         @default(now()) @db.Timestamp(3)
+  updatedAt     DateTime         @updatedAt @db.Timestamp(3)
 
   jemaat        User             @relation("ChatThreadJemaat", fields: [jemaatId], references: [id], onDelete: Cascade)
   messages      ChatMessage[]
@@ -109,11 +109,11 @@ model ChatThread {
 }
 
 model ChatMessage {
-  id        String     @id @default(cuid())
-  threadId  String
-  senderId  String
-  body      String     @db.Text
-  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid()) @db.VarChar(36)
+  threadId  String     @db.VarChar(36)
+  senderId  String     @db.VarChar(36)
+  body      String     @db.VarChar(255)
+  createdAt DateTime   @default(now()) @db.Timestamp(3)
 
   thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
   sender    User       @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
