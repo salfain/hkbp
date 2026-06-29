@@ -61,7 +61,7 @@ model User {
 
 model Kegiatan {
   id             String        @id @default(cuid()) @db.VarChar(36)
-  namaAcara      String        @db.VarChar(36)
+  namaAcara      String        @db.VarChar(150)
   deskripsi      String?       @db.VarChar(255)
   tanggalMulai   DateTime      @db.Timestamp(3)
   tanggalSelesai DateTime?     @db.Timestamp(3)

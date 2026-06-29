@@ -1,0 +1,1 @@
+ALTER TABLE "Kegiatan" ALTER COLUMN "namaAcara" TYPE VARCHAR(150);
